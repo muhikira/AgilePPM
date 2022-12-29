@@ -1,8 +1,11 @@
 package com.agileintelligence.ppmtool.web;
 
 import com.agileintelligence.ppmtool.domain.Project;
+import com.agileintelligence.ppmtool.exceptions.ProjectIdException;
+import com.agileintelligence.ppmtool.repositories.ProjectRepository;
 import com.agileintelligence.ppmtool.services.MapValidationErrorService;
 import com.agileintelligence.ppmtool.services.ProjectService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Path;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,8 @@ public class ProjectController {
 
     @Autowired
     private MapValidationErrorService mapValidationErrorService;
+    @Autowired
+    private ProjectRepository projectRepository;
 
 
     @PostMapping("")
@@ -44,5 +50,17 @@ public class ProjectController {
 
         return new ResponseEntity<Project>(project, HttpStatus.OK);
     }
-}
+
+    @GetMapping("/all")
+    public Iterable<Project> getAllProjects() {
+        return projectService.findAllProjects();
+    }
+    @DeleteMapping("/{projectId}")
+        public ResponseEntity<?>deleteProject(@PathVariable String projectId){
+           projectService.deleteProjectByIdentifier(projectId);
+           return new ResponseEntity<String>("Project with Id  '"+projectId+"'was  deleted", HttpStatus.OK);
+        }
+    }
+
+
 
